@@ -1,16 +1,18 @@
-
 # define instance IPs
 declare -a IPS=(10.0.2.200 10.0.2.111 10.0.2.154)
 
-# prepare hosts file
+# install cluster
+## prepare hosts file
 CONFIG_FILE=inventory/mycluster/hosts.yaml 
 python3 contrib/inventory_builder/inventory.py ${IPS[@]}
 
-# install cluster
+## install cluster
 ansible-playbook --become -e ansible_ssh_user=root -i inventory/mycluster/hosts.yaml  cluster.yml -b -v --private-key=/root/.ssh/taquy-vm
 
-# install firewalls
+## check nodes
+kubectl get nodes
 
+# install firewalls
 ## create script
 cat <<EOF > install-firewall.sh
 apt install -y firewalld
