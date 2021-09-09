@@ -1,4 +1,9 @@
 
+# Setup ansible server kubernetes master node / install firewall
+pre-installation/install-essential.sh
+
+# Install kubernetes cluster
+pre-installation/install-kubespray.sh
 
 # Connect to cluster
 
