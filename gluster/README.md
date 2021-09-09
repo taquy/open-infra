@@ -1,4 +1,4 @@
 
 
 # install gluster installation playbook
-ansible-playbook -i inventory-glusterfs.ini -b -v --private-key=/root/.ssh/taquy-vm install-gluster.yml
+ansible-playbook -i inventory.ini -b -v --private-key=/root/.ssh/taquy-vm install-gluster.yml
