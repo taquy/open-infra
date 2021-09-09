@@ -1,3 +1,9 @@
+# install essentials
+apt update
+apt install -y software-properties-common
+apt-add-repository --yes --update ppa:ansible/ansible
+apt install -y ansible
+
 # install heketi, heketi-cli
 curl -s https://api.github.com/repos/heketi/heketi/releases/latest \
   | grep browser_download_url \
@@ -10,7 +16,7 @@ heketi --version
 heketi-cli --version
 
 # create heketi systemd unit
-cat<<EOF>/etc/systemd/system/heketi.service
+echo "
 [Unit]
 Description=Heketi Server
 
@@ -26,4 +32,14 @@ StandardError=syslog
 
 [Install]
 WantedBy=multi-user.target
-EOF
+" > /etc/systemd/system/heketi.service
+
+# run heketi daemon
+wget -O /etc/heketi/heketi.env https://raw.githubusercontent.com/heketi/heketi/master/extras/systemd/heketi.env
+chown -R heketi:heketi /var/lib/heketi /var/log/heketi /etc/heketi
+setenforce 0
+sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+systemctl daemon-reload
+systemctl enable --now heketi
+systemctl restart heketi
+systemctl status heketi
