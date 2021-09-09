@@ -1,6 +1,7 @@
 INTERNAL_IPS=$(kubectl get nodes -o jsonpath={.items[*].status.addresses[?\(@.type==\"InternalIP\"\)].address})
-gluster peer status
 for i in $INTERNAL_IPS; do gluster peer probe $i; done
+gluster peer status
+
 BRICKS=""
 VOLUME_NAME="gv0"
 mkdir -p /data/$VOLUME_NAME
