@@ -1,4 +1,9 @@
+# ref: 
+# https://computingforgeeks.com/setup-glusterfs-storage-with-heketi-on-centos-server/
+
 # prepare topology template
+mkdir -p ansible/roles/heketi/{tasks,templates,defaults}
+
 echo '{
   "clusters": [
     {
@@ -26,7 +31,8 @@ echo '{
       ]
     }
   ]
-}' > topology-template.yml
+}' > ansible/roles/heketi/templates/topology-template.yml
+cat ansible/roles/heketi/templates/topology-template.yml
 
 # prepare topology values
 IPS_STR=$(kubectl get nodes -o jsonpath={.items[*].status.addresses[?\(@.type==\"InternalIP\"\)].address})
@@ -40,18 +46,16 @@ declare -a NAMES=()
 read -ra ADDR <<< "$NAMES_STR"
 for i in "${ADDR[@]}"; do NAMES+=("$i"); done
 
-echo "gluster_servers:">topology-values.yml
+echo "gluster_servers:">ansible/roles/heketi/defaults/main.yml
 for i in "${!NAMES[@]}";
 do
-	echo '
-	  - servername: ${NAMES[$i]}
-	    serverip: ${IPS[$i]}
-	    zone: 1
-	    disks:
-	      - /data/gv0
-	' >> topology-values.yml
+	echo '  - servername: '${NAMES[$i]}'
+    serverip: '${IPS[$i]}'
+    zone: 1
+    disks:
+      - /data/gv0' >> ansible/roles/heketi/defaults/main.yml
 done
-cat topology-values.yml
+cat ansible/roles/heketi/defaults/main.yml
 
 # prepare topology playbook task
 echo '---
@@ -64,9 +68,9 @@ echo '---
    path:  /etc/heketi/topology.json
    owner: heketi
    group: heketi
-' > task.yml
+' > ansible/roles/heketi/tasks/main.yml
 
-# prepare topology playbook task
+# prepare topology playbook
 echo '---
 - name: Generate Heketi topology file and copy to Heketi Server
   hosts: node1
@@ -74,11 +78,15 @@ echo '---
   become_method: sudo
   roles:
     - heketi
-' > playbook.yml
+' > ansible/playbook.yml
 
+# prepare hosts
+echo '' > ansible/hosts
+for i in "${!NAMES[@]}"; do echo ${NAMES[$i]} >> ansible/hosts; done
+cat ansible/hosts
 
 # execute playbook for topology templating
-ansible-playbook -i inventory-glusterfs.ini --user root --private-key=/root/.ssh/taquy-vm playbook.yml
+ansible-playbook -i ansible/hosts --private-key=/root/.ssh/taquy-vm ansible/playbook.yml
 cat /etc/heketi/topology.json 
 
 # load topology to heketi
