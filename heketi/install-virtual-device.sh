@@ -6,16 +6,12 @@ echo '
 # create 10 GB image
 dd if=/dev/zero of=/media/gluster.img bs=1M count=10240
 # format disk
-mkfs -t ext4 /media/gluster.img
-# mount volume
-mkdir /mnt/gluster/
-mount -t auto -o loop /media/gluster.img /mnt/gluster/ 
-# append automount to fstab
-if ! grep -q "gluster" /etc/fstab ; then
-    echo "# gluster" >> /etc/fstab
-    echo "/media/gluster.img    /mnt/gluster/    ext4    defaults      0        0" >> /etc/fstab
-fi
-df -hT
+mkfs -t ext4 -F /media/gluster.img
+# create the loopback block device 
+# where 7 is the major number of loop device driver, grep loop /proc/devices
+mknod /dev/gluster b 7 200 
+losetup /dev/gluster /media/gluster.img
+wipefs -a /dev/gluster
 ' > install-vhd.sh
 cat install-vhd.sh
 

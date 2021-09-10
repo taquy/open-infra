@@ -86,7 +86,7 @@ systemctl status heketi
 HEKETI_HOST=$(hostname -I | cut -d' ' -f1)
 
 echo '
-export HEKETI_CLI_SERVER=http://$HEKETI_HOST:$HEKETI_PORT
+export HEKETI_CLI_SERVER=http://'${HEKETI_HOST}':'${HEKETI_PORT}'
 export HEKETI_CLI_USER=admin
 export HEKETI_CLI_KEY="'${ADMIN_KEY}'"
 ' >> ~/.bashrc

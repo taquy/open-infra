@@ -53,7 +53,7 @@ do
     serverip: '${IPS[$i]}'
     zone: 1
     disks:
-      - /data/gv0' >> ansible/roles/heketi/defaults/main.yml
+      - /mnt/gluster/' >> ansible/roles/heketi/defaults/main.yml
 done
 cat ansible/roles/heketi/defaults/main.yml
 
@@ -69,6 +69,7 @@ echo '---
    owner: heketi
    group: heketi
 ' > ansible/roles/heketi/tasks/main.yml
+cat ansible/roles/heketi/tasks/main.yml
 
 # prepare topology playbook
 echo '---
@@ -79,6 +80,7 @@ echo '---
   roles:
     - heketi
 ' > ansible/playbook.yml
+cat ansible/playbook.yml
 
 # prepare hosts
 echo '' > ansible/hosts
