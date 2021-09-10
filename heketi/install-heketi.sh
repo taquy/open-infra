@@ -16,6 +16,8 @@ heketi --version
 heketi-cli --version
 
 # create heketi systemd unit
+HEKETI_PORT=8080
+
 echo "
 [Unit]
 Description=Heketi Server
@@ -34,6 +36,39 @@ StandardError=syslog
 WantedBy=multi-user.target
 " > /etc/systemd/system/heketi.service
 
+# config heketi server
+ADMIN_KEY="ZRl4d6Vtt5WCqgFB"
+USER_KEY="VKT2ElSz86HN5Lep"
+
+echo '
+{
+  "port": "${HEKETI_PORT}",
+  "use_auth": true,
+  "jwt": {
+    "admin": {
+      "key": "${ADMIN_KEY}"
+    },
+    "user": {
+      "key": "${USER_KEY}"
+    }
+  },
+  "glusterfs": {
+    "executor": "ssh",
+    "sshexec": {
+      "keyfile": "/etc/heketi/taquy-vm",
+      "user": "root",
+      "fstab": "/etc/fstab"
+    },
+    "db": "/var/lib/heketi/heketi.db",
+    "loglevel" : "debug",
+  }
+}
+' > /etc/heketi/heketi.json  
+
+# share ssh key with heketi user
+cp /root/.ssh/taquy-vm /etc/heketi/
+chown -R heketi:heketi /etc/heketi
+
 # run heketi daemon
 wget -O /etc/heketi/heketi.env https://raw.githubusercontent.com/heketi/heketi/master/extras/systemd/heketi.env
 chown -R heketi:heketi /var/lib/heketi /var/log/heketi /etc/heketi
@@ -43,3 +78,13 @@ systemctl daemon-reload
 systemctl enable --now heketi
 systemctl restart heketi
 systemctl status heketi
+
+# store heketi cli configuration
+HEKETI_HOST=$(hostname -I | cut -d' ' -f1)
+
+cat<<EOF>>~/.bashrc
+export HEKETI_CLI_SERVER=http://$HEKETI_HOST:$HEKETI_PORT
+export HEKETI_CLI_USER=admin
+export HEKETI_CLI_KEY="${ADMIN_KEY}"
+EOF
+source ~/.bashrc
