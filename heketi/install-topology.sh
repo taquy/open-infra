@@ -1,5 +1,5 @@
-echo '
-{
+# prepare topology template
+echo '{
   "clusters": [
     {
       "nodes": [
@@ -26,22 +26,9 @@ echo '
       ]
     }
   ]
-}
-' > topology.json.j2
+}' > topology-template.yml
 
-echo '
----
-- name: Copy heketi topology file
-  template:
-    src: topology.json.j2
-    dest: /etc/heketi/topology.json
-- name: Set proper file ownership
-  file:
-   path:  /etc/heketi/topology.json
-   owner: heketi
-   group: heketi
-' > task.yml
-
+# prepare topology values
 IPS_STR=$(kubectl get nodes -o jsonpath={.items[*].status.addresses[?\(@.type==\"InternalIP\"\)].address})
 NAMES_STR=$(kubectl get nodes -o jsonpath={.items[*].metadata.name})
 
@@ -66,8 +53,34 @@ do
 done
 cat topology-values.yml
 
-ansible-playbook -i inventory-glusterfs.ini --user root --private-key=/root/.ssh/taquy-vm  ~/projects/ansible/heketi.yml
+# prepare topology playbook task
+echo '---
+- name: Copy heketi topology file
+  template:
+    src: topology-template.yml
+    dest: /etc/heketi/topology.json
+- name: Set proper file ownership
+  file:
+   path:  /etc/heketi/topology.json
+   owner: heketi
+   group: heketi
+' > task.yml
+
+# prepare topology playbook task
+echo '---
+- name: Generate Heketi topology file and copy to Heketi Server
+  hosts: node1
+  become: yes
+  become_method: sudo
+  roles:
+    - heketi
+' > playbook.yml
+
+
+# execute playbook for topology templating
+ansible-playbook -i inventory-glusterfs.ini --user root --private-key=/root/.ssh/taquy-vm playbook.yml
 cat /etc/heketi/topology.json 
-# load topology
-heketi-cli topology load --user admin --secret "ZRl4d6Vtt5WCqgFB" --json=/etc/heketi/topology.json
+
+# load topology to heketi
+heketi-cli topology load --user $HEKETI_CLI_USER --secret "${HEKETI_CLI_KEY}" --json=/etc/heketi/topology.json
 
