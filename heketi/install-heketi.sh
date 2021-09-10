@@ -61,13 +61,14 @@ echo '
       "fstab": "/etc/fstab"
     },
     "db": "/var/lib/heketi/heketi.db",
-    "loglevel" : "debug",
+    "loglevel" : "debug"
   }
 }
 ' > /etc/heketi/heketi.json
 cat /etc/heketi/heketi.json
 
 # share ssh key with heketi user
+mkdir -p /var/lib/heketi /var/log/heketi /etc/heketi
 cp /root/.ssh/taquy-vm /etc/heketi/
 chown -R heketi:heketi /etc/heketi
 
