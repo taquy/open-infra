@@ -1,6 +1,6 @@
 
-# Install essential on master node
-install-essential.sh
+# Start procedure
+kubespray > gluster > heketi
 
 # Remove line in /root/.ssh/authorized_keys for all machines
 Tips: use ctrl+shift+6 to set mark

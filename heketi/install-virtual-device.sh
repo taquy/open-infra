@@ -17,3 +17,29 @@ if ! grep -q "gluster" /etc/fstab ; then
 fi
 df -hT
 ' > install-vhd.sh
+cat install-vhd.sh
+
+## create playbook
+cat <<EOF > install-vhd.yml
+- name: Transfer and execute a script.
+  hosts: all
+  remote_user: root
+  tasks:
+     - name: Transfer the script
+       copy: src=install-vhd.sh dest=/root mode=0777
+     - name: Execute the script
+       command: sh /root/install-vhd.sh
+EOF
+cat install-vhd.yml
+
+## create host file
+NAMES_STR=$(kubectl get nodes -o jsonpath={.items[*].metadata.name})
+declare -a NAMES=()
+read -ra ADDR <<< "$NAMES_STR"
+for i in "${ADDR[@]}"; do NAMES+=("$i"); done
+echo '' > hosts
+for i in "${!NAMES[@]}"; do echo ${NAMES[$i]} >> hosts; done
+cat hosts
+
+## run playbook
+ansible-playbook -i hosts -b -v --private-key=/root/.ssh/taquy-vm install-vhd.yml
