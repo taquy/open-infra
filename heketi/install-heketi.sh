@@ -1,9 +1,3 @@
-# install essentials
-apt update
-apt install -y software-properties-common
-apt-add-repository --yes --update ppa:ansible/ansible
-apt install -y ansible
-
 # install heketi, heketi-cli
 curl -s https://api.github.com/repos/heketi/heketi/releases/latest \
   | grep browser_download_url \
@@ -35,21 +29,28 @@ StandardError=syslog
 [Install]
 WantedBy=multi-user.target
 " > /etc/systemd/system/heketi.service
+cat /etc/systemd/system/heketi.service
 
 # config heketi server
 ADMIN_KEY="ZRl4d6Vtt5WCqgFB"
 USER_KEY="VKT2ElSz86HN5Lep"
 
+# create heketi user
+useradd -m heketi 
+groupadd heketi
+usermod -a -G heketi heketi
+
+mkdir -p /etc/heketi/
 echo '
 {
-  "port": "${HEKETI_PORT}",
+  "port": "'${HEKETI_PORT}'",
   "use_auth": true,
   "jwt": {
     "admin": {
-      "key": "${ADMIN_KEY}"
+      "key": "'${ADMIN_KEY}'"
     },
     "user": {
-      "key": "${USER_KEY}"
+      "key": "'${USER_KEY}'"
     }
   },
   "glusterfs": {
@@ -63,7 +64,8 @@ echo '
     "loglevel" : "debug",
   }
 }
-' > /etc/heketi/heketi.json  
+' > /etc/heketi/heketi.json
+cat /etc/heketi/heketi.json
 
 # share ssh key with heketi user
 cp /root/.ssh/taquy-vm /etc/heketi/
@@ -82,9 +84,10 @@ systemctl status heketi
 # store heketi cli configuration
 HEKETI_HOST=$(hostname -I | cut -d' ' -f1)
 
-cat<<EOF>>~/.bashrc
+echo '
 export HEKETI_CLI_SERVER=http://$HEKETI_HOST:$HEKETI_PORT
 export HEKETI_CLI_USER=admin
-export HEKETI_CLI_KEY="${ADMIN_KEY}"
-EOF
+export HEKETI_CLI_KEY="'${ADMIN_KEY}'"
+' >> ~/.bashrc
 source ~/.bashrc
+cat ~/.bashrc
