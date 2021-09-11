@@ -54,13 +54,7 @@ do
     zone: 1
     disks:
       - /mnt/gluster/' >> ansible/roles/heketi/defaults/main.yml
-  # update known hosts
-  ssh-keyscan -H ${NAMES[$i]} > /etc/ssh/ssh_known_hosts
-  ssh-keyscan -H ${IPS[$i]} > /etc/ssh/ssh_known_hosts
-  ssh-keyscan -H ${NAMES[$i]} > ~/.ssh/known_hosts
-  ssh-keyscan -H ${IPS[$i]} > ~/.ssh/known_hosts
 done
-cat /etc/ssh/ssh_known_hosts
 cat ansible/roles/heketi/defaults/main.yml
 
 echo '

@@ -31,15 +31,15 @@ WantedBy=multi-user.target
 " > /etc/systemd/system/heketi.service
 cat /etc/systemd/system/heketi.service
 
-# config heketi server
+# set admin/user key
 ADMIN_KEY="ZRl4d6Vtt5WCqgFB"
 USER_KEY="VKT2ElSz86HN5Lep"
 
 # create heketi user
-useradd -m heketi 
-groupadd heketi
-usermod -a -G heketi heketi
+groupadd --system heketi
+useradd -s /sbin/nologin --system -g heketi heketi
 
+# create heketi setting
 mkdir -p /etc/heketi/
 echo '
 {
@@ -77,6 +77,7 @@ wget -O /etc/heketi/heketi.env https://raw.githubusercontent.com/heketi/heketi/m
 chown -R heketi:heketi /var/lib/heketi /var/log/heketi /etc/heketi
 setenforce 0
 sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
+apt install -y selinux-utils
 systemctl daemon-reload
 systemctl enable --now heketi
 systemctl restart heketi

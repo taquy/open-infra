@@ -11,7 +11,6 @@ gen-playbook.sh
 gen-script.sh
 
 # install gluster installation playbook
-ansible-playbook -i inventory.ini -b -v --private-key=/root/.ssh/taquy-vm install-gluster.yml
 
 # peering cluster (from master node)
 peering.sh
