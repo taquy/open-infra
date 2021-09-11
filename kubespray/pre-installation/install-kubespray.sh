@@ -3,11 +3,12 @@ declare -a IPS=(10.0.2.155 10.0.2.111 10.0.2.138)
 
 # install cluster
 ## prepare hosts file
-CONFIG_FILE=inventory/mycluster/hosts.yaml 
-python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+cd kubespray
+CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inventory.py ${IPS[@]}
+CONFIG_FILE=inventory/mycluster/hosts.yaml
 
 ## install cluster
-ansible-playbook --become -e ansible_ssh_user=root -i inventory/mycluster/hosts.yaml  cluster.yml -b -v --private-key=/root/.ssh/taquy-vm
+ansible-playbook --become -e ansible_ssh_user=root -i $CONFIG_FILE cluster.yml -b -v --private-key=/root/.ssh/taquy-vm
 
 ## check nodes
 kubectl get nodes
@@ -36,5 +37,5 @@ cat <<EOF > install-firewall.yml
      - name: Execute the script
        command: sh /root/install-firewall.sh
 EOF
-
+cat install-firewall.yml
 ansible-playbook -i $CONFIG_FILE -b -v --private-key=/root/.ssh/taquy-vm install-firewall.yml
