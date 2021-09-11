@@ -1,5 +1,5 @@
 # define instance IPs
-declare -a IPS=(10.0.2.200 10.0.2.111 10.0.2.154)
+declare -a IPS=(10.0.2.155 10.0.2.111 10.0.2.138)
 
 # install cluster
 ## prepare hosts file
