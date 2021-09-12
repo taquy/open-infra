@@ -1,5 +1,5 @@
 
-# generate gcluster
+# generate gcluster installation script
 cat <<EOF > install-gluster.sh
 apt install -y software-properties-common
 add-apt-repository ppa:gluster/glusterfs-7 -y
@@ -24,6 +24,8 @@ apt install -y net-tools htop unzip git
 EOF
 
 # generate inventory
+
+## collect IPs and Hostnames using kubectl
 IPS_STR=$(kubectl get nodes -o jsonpath={.items[*].status.addresses[?\(@.type==\"InternalIP\"\)].address})
 NAMES_STR=$(kubectl get nodes -o jsonpath={.items[*].metadata.name})
 declare -a IPS=()
@@ -39,6 +41,7 @@ echo ${NAMES[@]}
 
 rm inventory.ini 2> /dev/null
 
+## create inventory file
 for i in "${!NAMES[@]}";
 do
 echo ''${NAMES[$i]}' ansible_ssh_host='${IPS[$i]}' ip='${IPS[$i]}' ansible_ssh_user=root'>>inventory.ini
@@ -51,6 +54,7 @@ echo '[network-storage:children]
 gfs-cluster'>>inventory.ini
 cat inventory.ini
 
+# generate playbook
 cat <<EOF > install-gluster.yml
 - name: Transfer and execute a script.
   hosts: gfs-cluster
@@ -66,3 +70,7 @@ cat install-gluster.yml
 # execute playbook
 ansible-playbook -i inventory.ini -b -v --private-key=/root/.ssh/taquy-vm install-gluster.yml
 systemctl status glusterd 
+
+# peering gluster
+for i in $IPS; do gluster peer probe $i; done
+gluster peer status

@@ -57,3 +57,21 @@ contexts:
   name: $CLUSTER_NAME
 current-context: $CLUSTER_NAME
 " > config.yml
+
+# connect to k8s cluster from client machine
+
+## on client machine, copy generated config file
+scp -i ~/.ssh/taquy-vm root@$REMOTE_HOST:~/config.yml ~/.kube/config.yml
+
+## set kubeconfig in env
+export KUBECONFIG=~/.kube/config.yml
+
+## check cluster information and client's context setting
+### view config
+kubectl cluster-info
+kubectl config view
+
+### select context
+kubectl config get-contexts
+kubectl config current-context
+kubectl config use-context cluster.local
