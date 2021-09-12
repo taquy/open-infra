@@ -3,7 +3,7 @@
 
 # prepare topology template
 mkdir -p ansible/roles/heketi/{tasks,templates,defaults}
-
+DEVICE_NAME="/dev/nvme1n1"
 echo '{
   "clusters": [
     {
@@ -53,7 +53,7 @@ do
     serverip: '${IPS[$i]}'
     zone: 1
     disks:
-      - /mnt/gluster/' >> ansible/roles/heketi/defaults/main.yml
+      - '${DEVICE_NAME}'' >> ansible/roles/heketi/defaults/main.yml
 done
 cat ansible/roles/heketi/defaults/main.yml
 

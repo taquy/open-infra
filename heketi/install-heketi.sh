@@ -5,7 +5,8 @@ curl -s https://api.github.com/repos/heketi/heketi/releases/latest \
   | cut -d '"' -f 4 \
   | wget -qi -
 for i in `ls | grep heketi | grep .tar.gz`; do tar xvf $i; done
-sudo cp heketi/{heketi,heketi-cli} /usr/local/bin
+cp heketi/{heketi,heketi-cli} /usr/local/bin
+apt install -y selinux-utils
 heketi --version
 heketi-cli --version
 
@@ -77,7 +78,6 @@ wget -O /etc/heketi/heketi.env https://raw.githubusercontent.com/heketi/heketi/m
 chown -R heketi:heketi /var/lib/heketi /var/log/heketi /etc/heketi
 setenforce 0
 sed -i 's/^SELINUX=.*/SELINUX=permissive/g' /etc/selinux/config
-apt install -y selinux-utils
 systemctl daemon-reload
 systemctl enable --now heketi
 systemctl restart heketi
@@ -93,3 +93,4 @@ export HEKETI_CLI_KEY="'${ADMIN_KEY}'"
 ' >> ~/.bashrc
 source ~/.bashrc
 cat ~/.bashrc
+curl $HEKETI_CLI_SERVER/hello
