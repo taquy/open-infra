@@ -6,3 +6,7 @@ kubespray > gluster > heketi
 Tips: use ctrl+shift+6 to set mark
 no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please login as the user \"ubuntu\" rather than the user \"root\".';echo;sleep 10"\
 
+# TODO
+- generate separate ssh key for heketi user
+- gluster inventory could be simplified
+- try to use virtual disk rather than mounting an external disk (this is for fully independent from cloud providers)

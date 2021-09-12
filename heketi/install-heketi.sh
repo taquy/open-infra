@@ -1,3 +1,9 @@
+# prepare constants
+HEKETI_PORT=8080
+HEKETI_HOST=$(hostname -I | cut -d' ' -f1)
+ADMIN_KEY="ZRl4d6Vtt5WCqgFB"
+USER_KEY="VKT2ElSz86HN5Lep"
+
 # install heketi, heketi-cli
 curl -s https://api.github.com/repos/heketi/heketi/releases/latest \
   | grep browser_download_url \
@@ -11,8 +17,6 @@ heketi --version
 heketi-cli --version
 
 # create heketi systemd unit
-HEKETI_PORT=8080
-
 echo "
 [Unit]
 Description=Heketi Server
@@ -31,10 +35,6 @@ StandardError=syslog
 WantedBy=multi-user.target
 " > /etc/systemd/system/heketi.service
 cat /etc/systemd/system/heketi.service
-
-# set admin/user key
-ADMIN_KEY="ZRl4d6Vtt5WCqgFB"
-USER_KEY="VKT2ElSz86HN5Lep"
 
 # create heketi user
 groupadd --system heketi
@@ -84,8 +84,6 @@ systemctl restart heketi
 systemctl status heketi
 
 # store heketi cli configuration
-HEKETI_HOST=$(hostname -I | cut -d' ' -f1)
-
 echo '
 export HEKETI_CLI_SERVER=http://'${HEKETI_HOST}':'${HEKETI_PORT}'
 export HEKETI_CLI_USER=admin
@@ -93,4 +91,6 @@ export HEKETI_CLI_KEY="'${ADMIN_KEY}'"
 ' >> ~/.bashrc
 source ~/.bashrc
 cat ~/.bashrc
+
+# test heketi cli
 curl $HEKETI_CLI_SERVER/hello
