@@ -8,5 +8,6 @@ no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="echo 'Please l
 
 # TODO
 - generate separate ssh key for heketi user
+- generate separate ssh key for ansible user 
 - gluster inventory could be simplified
 - try to use virtual disk rather than mounting an external disk (this is for fully independent from cloud providers)

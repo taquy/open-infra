@@ -5,3 +5,8 @@
 install-heketi.sh
 install-topology.sh
 - make sure update common device name, admin key, user key according to your like
+
+# Steps for demo
+demo/create-storage-class.sh
+- this will generate a storage class and a sample persistent volume claims
+demo/deploy-mongodb.sh
