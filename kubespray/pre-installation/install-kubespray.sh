@@ -8,7 +8,10 @@ CONFIG_FILE=inventory/mycluster/hosts.yaml python3 contrib/inventory_builder/inv
 CONFIG_FILE=inventory/mycluster/hosts.yaml
 
 ## install cluster
-ansible-playbook --become -e ansible_ssh_user=root -i $CONFIG_FILE cluster.yml -b -v --private-key=/root/.ssh/taquy-vm
+ansible-playbook --become -e ansible_ssh_user=root \
+  -i $CONFIG_FILE \
+  -b -v --private-key=/root/.ssh/taquy-vm \
+  cluster.yml
 
 ## check nodes
 kubectl get nodes
