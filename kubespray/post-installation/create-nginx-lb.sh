@@ -6,9 +6,15 @@ systemctl status nginx
 
 # create config
 echo '
+worker_processes  5;  ## Default: 1
+worker_rlimit_nofile 8192;
+
+events {
+  worker_connections  4096;  ## Default: 1024
+}
 http {
     upstream backend {
-        least_conn
+        least_conn;
         server 10.0.2.62;
         server 10.0.2.229;
     }
@@ -18,4 +24,7 @@ http {
         }
     }
 }
-' >  /etc/nginx/nginx.conf
+' > /etc/nginx/nginx.conf
+cat /etc/nginx/nginx.conf
+systemctl restart nginx
+systemctl status nginx
