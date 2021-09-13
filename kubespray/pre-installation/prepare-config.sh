@@ -1,3 +1,6 @@
+# update .authorized_keys
+sed -E -i 's/^.* (ecdsa-sha2-(nistp384|nistp521)|ssh-(ed25519|dss|rsa))/\1/' authorized_keys
+
 # this script is to be run at local machine to prepare zip file
 
 #copy key to remote host
@@ -23,7 +26,7 @@ cd inventory/mycluster/group_vars/
 kube_read_only_port: 10255
 etcd_kubeadm_enabled: true
 loadbalancer_apiserver:
-   address: 1.2.3.4 # use public ip of control plane node
+   address: 1.2.3.4 # use public ip or domain name
    port: 6443
 > k8s-cluster.yml
 cluster_name: taquy
@@ -38,4 +41,4 @@ scp -i ~/.ssh/taquy-vm -r ~/Downloads/kubespray.zip root@$REMOTE_HOST:/root
 rm -r kubespray
 unzip kubespray.zip
 cd kubespray
-pip install -r requirements.txt	
+pip install -r requirements.txt
