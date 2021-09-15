@@ -10,7 +10,7 @@ ansible-playbook --become -e ansible_ssh_user=root \
 ansible-playbook --become -e ansible_ssh_user=root \
   -i inventory/mycluster/hosts.yaml \
   -b -v --private-key=/root/.ssh/taquy-vm \
-  upgrade_cluster_setup=true \
+  -e upgrade_cluster_setup=true \
   cluster.yml
 
 # install cluster

@@ -23,6 +23,7 @@ cd inventory/mycluster/group_vars/
 
 : '
 > all.yml
+apiserver_loadbalancer_domain_name: ''
 kube_read_only_port: 10255
 etcd_kubeadm_enabled: true
 loadbalancer_apiserver:

@@ -5,6 +5,7 @@ systemctl enabled nginx
 systemctl status nginx
 
 # create config
+mkdir -p /etc/nginx/
 echo '
 worker_processes  5;  ## Default: 1
 worker_rlimit_nofile 8192;
@@ -15,12 +16,13 @@ events {
 http {
     upstream backend {
         least_conn;
-        server 10.0.2.62;
-        server 10.0.2.229;
+        server 10.0.2.62:6443;
+        server 10.0.2.229:6443;
     }
     server {
+        server_name k8s.taquy.com;
         location / {
-            proxy_pass http://backend;
+            proxy_pass https://backend;
         }
     }
 }
@@ -28,3 +30,5 @@ http {
 cat /etc/nginx/nginx.conf
 systemctl restart nginx
 systemctl status nginx
+
+curl https://k8s.taquy.dev
