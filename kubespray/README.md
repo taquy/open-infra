@@ -2,6 +2,9 @@
 # Setup ansible server kubernetes master node / install firewall
 pre-installation/install-essential.sh
 
+# Prepare ssh key
+pre-installation/install-sshkey.sh
+
 # Install kubernetes cluster
 ## On client machine
 pre-installation/prepare-config.sh

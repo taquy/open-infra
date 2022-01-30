@@ -18,7 +18,7 @@ Host ${NAMES[$i]}
   HostName ${NAMES[$i]}
   User root
   Port 22
-  IdentityFile /root/.ssh/taquy-vm
+  IdentityFile /root/.ssh/id_rsa
   IdentitiesOnly yes
 EOF
 done

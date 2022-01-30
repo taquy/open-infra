@@ -7,7 +7,7 @@ kind: ServiceAccount
 metadata:
   name: $ACCOUNT_NAME
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: cluster-admin-$ACCOUNT_NAME

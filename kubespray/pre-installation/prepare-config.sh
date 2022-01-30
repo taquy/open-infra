@@ -26,6 +26,7 @@ cd inventory/mycluster/group_vars/
 apiserver_loadbalancer_domain_name: ''
 kube_read_only_port: 10255
 etcd_kubeadm_enabled: true
+download_container: true
 loadbalancer_apiserver:
    address: 1.2.3.4 # use public ip or domain name
    port: 6443

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+cat <<EOF > /etc/ssh/sshd_config
+PermitRootLogin yes
+StrictModes yes
+MaxAuthTries 3
+MaxSessions 3
+
+PubkeyAuthentication yes
+
+ChallengeResponseAuthentication no
+
+UsePAM no
+
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+
+Subsystem sftp	/usr/lib/openssh/sftp-server
+
+PasswordAuthentication no
+EOF
+
+service sshd restart
+systemctl reload ssh
+
+# make sure root has same ssh config
+
+cp -r /home/qt/.ssh/* /root/.ssh
