@@ -17,8 +17,6 @@ X11Forwarding yes
 PrintMotd no
 AcceptEnv LANG LC_*
 
-Subsystem sftp	/usr/lib/openssh/sftp-server
-
 PasswordAuthentication no
 EOF
 

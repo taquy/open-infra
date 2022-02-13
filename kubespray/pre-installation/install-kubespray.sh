@@ -19,6 +19,8 @@ kubectl get nodes
 # install firewalls
 ## create script
 cat <<EOF > install-firewall.sh
+systemctl enable docker.service
+
 apt install -y firewalld
 systemctl start firewalld
 systemctl enable firewalld
@@ -32,7 +34,6 @@ firewall-cmd --zone=public --permanent --add-port=6443/tcp --permanent
 firewall-cmd --zone=public --permanent --add-port=10250-10256/tcp --permanent
 firewall-cmd --zone=public --permanent --add-port=30000-32767/tcp --permanent
 
-
 firewall-cmd --zone=public --permanent --add-port=9100-9101/tcp --permanent
 firewall-cmd --zone=public --permanent --add-port=5757/tcp --permanent
 
@@ -43,6 +44,7 @@ firewall-cmd --zone=public --permanent --add-port=179/tcp --permanent
 # http
 firewall-cmd --zone=public --permanent --add-port=80/tcp --permanent
 firewall-cmd --zone=public --permanent --add-port=443/tcp --permanent
+firewall-cmd --zone=public --permanent --add-port=8443/tcp --permanent
 
 # coredns
 firewall-cmd --zone=public --permanent --add-port=8081/tcp --permanent
@@ -90,3 +92,23 @@ cat <<EOF > fix-access-apiserver.yml
 EOF
 cat fix-access-apiserver.yml
 ansible-playbook -i $CONFIG_FILE -b -v --private-key=/root/.ssh/id_rsa fix-access-apiserver.yml
+
+# remove everything kubernetes
+# fix access to control api server
+cat <<EOF > full-clean.sh
+sudo rm -rf /etc/kubernetes
+EOF
+
+## create playbook
+cat <<EOF > full-clean.yml
+- name: Transfer and execute a script.
+  hosts: all
+  remote_user: root
+  tasks:
+     - name: Transfer the script
+       copy: src=full-clean.sh dest=/root mode=0777
+     - name: Execute the script
+       command: sh /root/full-clean.sh
+EOF
+cat full-clean.yml
+ansible-playbook -i $CONFIG_FILE -b -v --private-key=/root/.ssh/id_rsa full-clean.yml

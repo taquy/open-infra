@@ -1,3 +1,4 @@
+kubectl config set-context --current --namespace=default
 
 ACCOUNT_NAME=taquy
 
